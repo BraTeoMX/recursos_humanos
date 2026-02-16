@@ -10,7 +10,8 @@ export type UseAppearanceReturn = {
     updateAppearance: (value: Appearance) => void;
 };
 
-export function updateTheme(_value: Appearance): void {
+// CAMBIO 1: Eliminé "_value: Appearance" de los paréntesis
+export function updateTheme(): void {
     if (typeof window === 'undefined') {
         return;
     }
@@ -27,7 +28,7 @@ export function initializeTheme(): void {
     document.cookie =
         'appearance=light;path=/;max-age=31536000;SameSite=Lax';
 
-    updateTheme('light');
+    updateTheme(); // CAMBIO: Aquí ya no necesita argumento
 }
 
 const appearance = ref<Appearance>('light');
@@ -35,7 +36,8 @@ const appearance = ref<Appearance>('light');
 export function useAppearance(): UseAppearanceReturn {
     const resolvedAppearance = computed<ResolvedAppearance>(() => 'light');
 
-    function updateAppearance(_value: Appearance) {
+    // CAMBIO 2: Eliminé "_value: Appearance" de los paréntesis aquí también
+    function updateAppearance() {
         initializeTheme();
         appearance.value = 'light';
     }
