@@ -12,285 +12,168 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Datos simulados de laboratorio textil
-const summary = {
-    productionToday: 12850, // metros de tela
-    productionTarget: 12000,
-    qualityIndex: 97.4, // %
-    machinesRunning: 42,
-    machinesTotal: 50,
-    ordersInProgress: 18,
-};
+const periodLabel = 'Enero 2026';
 
-const kpis = [
+const hrMetrics = [
     {
-        label: 'Eficiencia de producción',
-        value: 107,
-        unit: '% del objetivo',
-        trend: '+3.2 vs ayer',
+        key: 'nuevos-ingresos',
+        label: 'Nuevos ingresos',
+        value: 24,
+        helper: 'Personas incorporadas este mes',
+        tone: 'text-emerald-600',
     },
     {
-        label: 'Tasa de defectos',
-        value: 1.8,
-        unit: '%',
-        trend: '-0.4 vs promedio semanal',
+        key: 'retencion',
+        label: 'Se mantienen',
+        value: 20,
+        helper: 'Colaboradores que siguen activos',
+        tone: 'text-sky-600',
     },
     {
-        label: 'OEE promedio',
-        value: 86.5,
-        unit: '%',
-        trend: '+1.1 vs mes pasado',
+        key: 'capacitacion',
+        label: 'Capacitacion finalizada',
+        value: 15,
+        helper: 'Finalizaron induccion y plan inicial',
+        tone: 'text-indigo-600',
     },
     {
-        label: 'Entrega a tiempo',
-        value: 93.0,
-        unit: '%',
-        trend: '+0.8 vs trimestre anterior',
+        key: 'rezagados',
+        label: 'Rezagados',
+        value: 5,
+        helper: 'Pendientes por cerrar proceso',
+        tone: 'text-amber-600',
     },
 ] as const;
 
-const trends = [
-    { label: 'Lun', value: 11200 },
-    { label: 'Mar', value: 11850 },
-    { label: 'Mié', value: 12100 },
-    { label: 'Jue', value: 11950 },
-    { label: 'Vie', value: 12500 },
-    { label: 'Sáb', value: 9800 },
-] as const;
+const totalIngresos = computed(() => hrMetrics[0].value);
 
-const maxTrendValue = computed(() => {
-    if (!trends.length) return 0;
-    return Math.max(...trends.map((t) => t.value));
-});
+const funnel = computed(() => {
+    const [newHires, retained, trained, delayed] = hrMetrics;
+    const base = newHires.value || 1;
 
-const productionProgress = computed(() => {
-    if (!summary.productionTarget) return 0;
-
-    return Math.min(
-        120,
-        (summary.productionToday / summary.productionTarget) * 100,
-    );
-});
-
-const machinesUsage = computed(() => {
-    if (!summary.machinesTotal) return 0;
-
-    return (summary.machinesRunning / summary.machinesTotal) * 100;
+    return [
+        {
+            label: newHires.label,
+            value: newHires.value,
+            width: 100,
+            color: 'bg-emerald-500/90',
+        },
+        {
+            label: retained.label,
+            value: retained.value,
+            width: (retained.value / base) * 100,
+            color: 'bg-sky-500/90',
+        },
+        {
+            label: trained.label,
+            value: trained.value,
+            width: (trained.value / base) * 100,
+            color: 'bg-indigo-500/90',
+        },
+        {
+            label: delayed.label,
+            value: delayed.value,
+            width: (delayed.value / base) * 100,
+            color: 'bg-amber-500/90',
+        },
+    ];
 });
 </script>
 
 <template>
-    <Head title="Dashboard – KPIs laboratorio" />
+    <Head title="Dashboard - Atraccion de Talento" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-        >
-            <!-- Encabezado -->
+        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <header
-                class="flex flex-col gap-3 border-b border-border pb-4 md:flex-row md:items-end md:justify-between dark:border-sidebar-border"
+                class="rounded-xl border border-border bg-card p-5 shadow-sm"
             >
-                <div>
-                    <h1 class="text-lg font-semibold tracking-tight">
-                        Panel de KPIs – Laboratorio Textil
-                    </h1>
-                    <p class="mt-1 text-xs text-muted-foreground">
-                        Resumen de producción, calidad y utilización de máquinas
-                        (datos simulados).
-                    </p>
-                </div>
-                <div class="flex flex-wrap gap-2 text-[11px] text-muted-foreground">
-                    <span
-                        class="inline-flex items-center gap-1 rounded-full bg-background px-3 py-1 ring-1 ring-border"
-                    >
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Datos de ejemplo
-                    </span>
-                    <span
-                        class="rounded-full bg-background px-3 py-1 ring-1 ring-border"
-                    >
-                        Actualizado: hace unos segundos
-                    </span>
+                <h1 class="text-xl font-semibold tracking-tight">
+                    Recursos Humanos - Atraccion de Talento
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    KPI de referencia para seguimiento de reclutamiento e
+                    incorporacion. Datos de maqueta para demostracion.
+                </p>
+                <div class="mt-3 text-xs text-muted-foreground">
+                    Periodo: {{ periodLabel }}
                 </div>
             </header>
 
-            <!-- Tarjetas resumen -->
-            <section class="grid gap-4 md:grid-cols-4">
-                <div
-                    class="rounded-xl border border-border bg-card p-4 shadow-sm dark:border-sidebar-border"
+            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <article
+                    v-for="metric in hrMetrics"
+                    :key="metric.key"
+                    class="rounded-xl border border-border bg-card p-4 shadow-sm"
                 >
                     <p
                         class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
                     >
-                        Producción de hoy
+                        {{ metric.label }}
                     </p>
-                    <p class="mt-2 text-2xl font-semibold">
-                        {{ summary.productionToday.toLocaleString('es-PE') }} m
+                    <p class="mt-2 text-3xl font-semibold" :class="metric.tone">
+                        {{ metric.value }}
                     </p>
-                    <p class="mt-1 text-[11px] text-muted-foreground">
-                        Objetivo:
-                        {{ summary.productionTarget.toLocaleString('es-PE') }} m
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        {{ metric.helper }}
                     </p>
-                    <div class="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                            class="h-full rounded-full bg-emerald-500"
-                            :style="{ width: `${productionProgress}%` }"
-                        />
-                    </div>
-                </div>
-
-                <div
-                    class="rounded-xl border border-border bg-card p-4 shadow-sm dark:border-sidebar-border"
-                >
-                    <p
-                        class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-                    >
-                        Índice de calidad
-                    </p>
-                    <p class="mt-2 text-2xl font-semibold text-emerald-500">
-                        {{ summary.qualityIndex.toFixed(1) }}%
-                    </p>
-                    <p class="mt-1 text-[11px] text-muted-foreground">
-                        Porcentaje de rollos que pasan control de calidad.
-                    </p>
-                </div>
-
-                <div
-                    class="rounded-xl border border-border bg-card p-4 shadow-sm dark:border-sidebar-border"
-                >
-                    <p
-                        class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-                    >
-                        Máquinas activas
-                    </p>
-                    <p class="mt-2 text-2xl font-semibold">
-                        {{ summary.machinesRunning }} /
-                        {{ summary.machinesTotal }}
-                    </p>
-                    <p class="mt-1 text-[11px] text-muted-foreground">
-                        Utilización aproximada:
-                        <span class="font-medium">
-                            {{ machinesUsage.toFixed(0) }}%
-                        </span>
-                    </p>
-                </div>
-
-                <div
-                    class="rounded-xl border border-border bg-card p-4 shadow-sm dark:border-sidebar-border"
-                >
-                    <p
-                        class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-                    >
-                        Órdenes en proceso
-                    </p>
-                    <p class="mt-2 text-2xl font-semibold">
-                        {{ summary.ordersInProgress }}
-                    </p>
-                    <p class="mt-1 text-[11px] text-muted-foreground">
-                        Procesos activos en laboratorio.
-                    </p>
-                </div>
+                </article>
             </section>
 
-            <!-- KPIs + gráfica -->
-            <section class="grid flex-1 gap-4 lg:grid-cols-3">
-                <!-- KPIs detallados -->
-                <div class="space-y-3 lg:col-span-1">
+            <section class="grid gap-4 lg:grid-cols-3">
+                <article
+                    class="rounded-xl border border-border bg-card p-5 shadow-sm lg:col-span-2"
+                >
                     <h2
                         class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                     >
-                        Indicadores clave
+                        Avance del proceso
                     </h2>
 
-                    <div class="space-y-3">
-                        <article
-                            v-for="kpi in kpis"
-                            :key="kpi.label"
-                            class="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 text-sm shadow-sm dark:border-sidebar-border"
-                        >
-                            <div>
-                                <p
-                                    class="text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-                                >
-                                    {{ kpi.label }}
-                                </p>
-                                <p class="mt-1 text-lg font-semibold">
-                                    {{ kpi.value }}
-                                    <span
-                                        class="text-[11px] font-normal text-muted-foreground"
-                                    >
-                                        {{ kpi.unit }}
-                                    </span>
-                                </p>
-                                <p
-                                    class="mt-1 text-[11px]"
-                                    :class="
-                                        kpi.trend.includes('-')
-                                            ? 'text-emerald-500'
-                                            : 'text-amber-500'
-                                    "
-                                >
-                                    {{ kpi.trend }}
-                                </p>
-                            </div>
-                            <div
-                                class="ml-4 h-10 w-10 rounded-full bg-muted/60"
-                            />
-                        </article>
-                    </div>
-                </div>
-
-                <!-- Gráfica de barras simple -->
-                <div class="lg:col-span-2">
-                    <h2
-                        class="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                    >
-                        Producción diaria (m de tela)
-                    </h2>
-                    <div
-                        class="flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-sm dark:border-sidebar-border"
-                    >
+                    <div class="mt-4 space-y-3">
                         <div
-                            class="flex flex-1 items-end justify-between gap-3 border-b border-border pb-4 text-[11px] dark:border-sidebar-border"
+                            v-for="step in funnel"
+                            :key="step.label"
+                            class="space-y-1"
                         >
                             <div
-                                v-for="item in trends"
-                                :key="item.label"
-                                class="flex flex-1 flex-col items-center gap-1"
+                                class="flex items-center justify-between text-xs text-muted-foreground"
                             >
+                                <span>{{ step.label }}</span>
+                                <span>{{ step.value }}</span>
+                            </div>
+                            <div class="h-2.5 rounded-full bg-muted">
                                 <div
-                                    class="flex w-full items-end justify-center rounded-t-md bg-gradient-to-t from-sky-500/10 to-sky-500/70"
+                                    class="h-full rounded-full transition-all"
+                                    :class="step.color"
                                     :style="{
-                                        height: maxTrendValue
-                                            ? `${Math.max(
-                                                  8,
-                                                  (item.value /
-                                                      maxTrendValue) * 100,
-                                              )}%`
-                                            : '0%',
+                                        width: `${Math.max(
+                                            8,
+                                            Math.min(100, step.width),
+                                        )}%`,
                                     }"
-                                >
-                                    <span
-                                        class="mb-1 text-[10px] font-medium text-sky-950/80 dark:text-sky-100"
-                                    >
-                                        {{ item.value.toLocaleString('es-PE') }}
-                                    </span>
-                                </div>
-                                <span
-                                    class="text-[11px] font-medium text-muted-foreground"
-                                >
-                                    {{ item.label }}
-                                </span>
+                                />
                             </div>
                         </div>
-                        <div
-                            class="mt-3 flex items-center justify-between text-[11px] text-muted-foreground"
-                        >
-                            <span>Semana actual (simulada)</span>
-                            <span>Laboratorio de pruebas textiles</span>
-                        </div>
                     </div>
-                </div>
+                </article>
+
+                <article class="rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <h2
+                        class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                    >
+                        Resumen rapido
+                    </h2>
+                    <p class="mt-3 text-sm text-muted-foreground">
+                        De {{ totalIngresos }} ingresos, {{ hrMetrics[1].value }}
+                        se mantienen activos y {{ hrMetrics[2].value }}
+                        completaron capacitacion.
+                    </p>
+                    <p class="mt-3 text-sm text-muted-foreground">
+                        {{ hrMetrics[3].value }} personas permanecen como
+                        rezagadas para seguimiento.
+                    </p>
+                </article>
             </section>
         </div>
     </AppLayout>

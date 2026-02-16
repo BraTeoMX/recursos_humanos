@@ -4,9 +4,6 @@
 /* Importar animaciones */
 @import 'tw-animate-css';
 
-/* Fuente personalizada: Plus Jakarta Sans */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 /* Configurar fuentes de Laravel */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -50,26 +47,34 @@
     --color-accent-900: #78350f;
 
     /* === COLORES DE FONDO Y SUPERFICIE === */
-    --color-background: #f8fafc;        /* Slate 50 */
-    --color-surface: #ffffff;           /* Blanco puro */
-    --color-text-main: #1e293b;         /* Slate 800 */
-    --color-text-secondary: #475569;    /* Slate 600 */
-    --color-text-tertiary: #94a3b8;     /* Slate 400 */
+    --color-background: #f8fafc;
+    /* Slate 50 */
+    --color-surface: #ffffff;
+    /* Blanco puro */
+    --color-text-main: #1e293b;
+    /* Slate 800 */
+    --color-text-secondary: #475569;
+    /* Slate 600 */
+    --color-text-tertiary: #94a3b8;
+    /* Slate 400 */
 
     /* === MAPEO A VARIABLES DE TAILWIND === */
     --color-primary: var(--color-primary-600);
     --color-primary-foreground: #ffffff;
 
-    --color-secondary: #f1f5f9;         /* Slate 100 */
+    --color-secondary: #f1f5f9;
+    /* Slate 100 */
     --color-secondary-foreground: var(--color-text-main);
 
-    --color-muted: #f1f5f9;             /* Slate 100 */
+    --color-muted: #f1f5f9;
+    /* Slate 100 */
     --color-muted-foreground: var(--color-text-secondary);
 
     --color-accent: var(--color-accent-500);
     --color-accent-foreground: #ffffff;
 
-    --color-destructive: #ef4444;       /* Red 500 */
+    --color-destructive: #ef4444;
+    /* Red 500 */
     --color-destructive-foreground: #ffffff;
 
     --color-foreground: var(--color-text-main);
@@ -80,26 +85,37 @@
     --color-popover: var(--color-surface);
     --color-popover-foreground: var(--color-text-main);
 
-    --color-border: #e2e8f0;            /* Slate 200 */
-    --color-input: #e2e8f0;             /* Slate 200 */
+    --color-border: #e2e8f0;
+    /* Slate 200 */
+    --color-input: #e2e8f0;
+    /* Slate 200 */
     --color-ring: var(--color-primary-500);
 
     /* === COLORES PARA GRÁFICOS === */
     --color-chart-1: var(--color-primary-500);
     --color-chart-2: var(--color-accent-500);
-    --color-chart-3: #8b5cf6;           /* Violet 500 */
-    --color-chart-4: #ec4899;           /* Pink 500 */
-    --color-chart-5: #10b981;           /* Emerald 500 */
+    --color-chart-3: #8b5cf6;
+    /* Violet 500 */
+    --color-chart-4: #ec4899;
+    /* Pink 500 */
+    --color-chart-5: #10b981;
+    /* Emerald 500 */
 
-    /* === COLORES DEL SIDEBAR === */
-    --color-sidebar: #ffffff;
-    --color-sidebar-foreground: var(--color-text-main);
-    --color-sidebar-primary: var(--color-primary-600);
+    /* === COLORES DEL SIDEBAR (Teal Distintivo) === */
+    --color-sidebar: #0f766e;
+    /* Teal 700 - Fondo distintivo */
+    --color-sidebar-foreground: #f0fdfa;
+    /* Teal 50 - Texto claro */
+    --color-sidebar-primary: #14b8a6;
+    /* Teal 500 - Items activos */
     --color-sidebar-primary-foreground: #ffffff;
-    --color-sidebar-accent: #f8fafc;    /* Slate 50 */
-    --color-sidebar-accent-foreground: var(--color-text-secondary);
-    --color-sidebar-border: var(--color-border);
-    --color-sidebar-ring: var(--color-primary-500);
+    --color-sidebar-accent: #0d9488;
+    /* Teal 600 - Hover/Accent */
+    --color-sidebar-accent-foreground: #ffffff;
+    --color-sidebar-border: #14b8a6;
+    /* Teal 500 - Bordes sutiles */
+    --color-sidebar-ring: #5eead4;
+    /* Teal 300 - Focus ring */
 }
 
 /*
@@ -108,6 +124,7 @@
   mantenemos estos estilos para compatibilidad con v3.
 */
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -166,7 +183,7 @@
     --chart-4: var(--color-chart-4);
     --chart-5: var(--color-chart-5);
 
-    /* Sidebar */
+    /* Sidebar - Mapeado a variables Teal */
     --sidebar-background: var(--color-sidebar);
     --sidebar-foreground: var(--color-sidebar-foreground);
     --sidebar-primary: var(--color-sidebar-primary);
