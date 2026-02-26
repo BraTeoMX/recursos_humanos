@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3'
 import { ref, onMounted, watch } from 'vue'
+import { menu, guardarRegistro } from '@/routes/publico'
+import api from '@/routes/publico/api'
 
 // ---------------------------------------------------------------------------
 // Props desde Inertia (registros del día cargados en el servidor al entrar)
@@ -55,7 +57,7 @@ async function buscarPorTag() {
   mensajeError.value = ''
 
   try {
-    const res = await fetch(`/publico/api/buscar-por-tag?tag=${encodeURIComponent(tag)}`)
+    const res = await fetch(`${api.buscarPorTag().url}&tag=${encodeURIComponent(tag)}`)
     if (res.status === 404) {
       estadoBusquedaTag.value = 'no_encontrado'
       mensajeError.value = 'No se encontró ningún empleado con ese número de tag.'
@@ -78,7 +80,7 @@ watch(inputNombre, (valor) => {
 
   timerNombre = setTimeout(async () => {
     try {
-      const res = await fetch(`/publico/api/buscar-por-nombre?nombre=${encodeURIComponent(valor.trim())}`)
+      const res = await fetch(`${api.buscarPorNombre().url}&nombre=${encodeURIComponent(valor.trim())}`)
       sugerenciasNombre.value = await res.json()
     } catch { /* silencioso */ }
   }, 400)
@@ -118,7 +120,7 @@ async function guardarAsistencia() {
     const csrfToken = (document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1]
     const token = csrfToken ? decodeURIComponent(csrfToken) : ''
 
-    const res = await fetch('/publico/guardar-registro', {
+    const res = await fetch(guardarRegistro().url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -165,7 +167,7 @@ async function guardarAsistencia() {
     <header class="bg-teal-600 text-white px-6 py-4 flex items-center justify-between shadow">
       <div class="flex items-center gap-3">
         <button
-          @click="router.visit('/publico')"
+          @click="router.visit(menu().url)"
           class="rounded-lg bg-teal-700 hover:bg-teal-800 px-3 py-1.5 text-xs font-medium transition"
         >
           ← Volver

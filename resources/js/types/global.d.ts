@@ -14,11 +14,18 @@ declare module 'vite/client' {
 }
 
 declare module '@inertiajs/core' {
+    interface Flash {
+        success?: string | null;
+        error?: string | null;
+        warning?: string | null;
+    }
+
     export interface InertiaConfig {
         sharedPageProps: {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            flash: Flash;
             [key: string]: unknown;
         };
     }

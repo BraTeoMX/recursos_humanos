@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import { router } from '@inertiajs/vue3'
-
-function irA(destino: string) {
-  router.visit(destino)
-}
+import { Head, router } from '@inertiajs/vue3'
+import { asistencia, retardo, visitas } from '@/routes/publico'
 </script>
 
 <template>
@@ -28,7 +24,7 @@ function irA(destino: string) {
 
       <!-- Opción 1: Asistencia -->
       <button
-        @click="irA('/publico/asistencia')"
+        @click="router.visit(asistencia().url)"
         class="group flex items-center gap-4 rounded-2xl bg-white px-6 py-5 shadow-md border border-gray-100 hover:border-teal-300 hover:shadow-lg transition-all duration-200 text-left"
       >
         <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all duration-200">
@@ -45,7 +41,7 @@ function irA(destino: string) {
 
       <!-- Opción 2: Retardo -->
       <button
-        @click="irA('/publico/retardo')"
+        @click="router.visit(retardo().url)"
         class="group flex items-center gap-4 rounded-2xl bg-white px-6 py-5 shadow-md border border-gray-100 hover:border-amber-300 hover:shadow-lg transition-all duration-200 text-left"
       >
         <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-all duration-200">
@@ -62,7 +58,7 @@ function irA(destino: string) {
 
       <!-- Opción 3: Visitas -->
       <button
-        @click="irA('/publico/visitas')"
+        @click="router.visit(visitas().url)"
         class="group flex items-center gap-4 rounded-2xl bg-white px-6 py-5 shadow-md border border-gray-100 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 text-left"
       >
         <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-200">

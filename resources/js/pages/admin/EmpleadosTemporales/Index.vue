@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Head, useForm, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
-import { ref } from 'vue'
+import { toast } from 'vue-sonner'
+// ✅ Wayfinder — tipado y generado automáticamente desde las rutas de Laravel
+import { store, destroy } from '@/routes/admin/empleados-temporales'
 
 interface Empleado {
   id: number
@@ -13,7 +15,6 @@ interface Empleado {
 
 const props = defineProps<{
   empleados: Empleado[]
-  flash?: { success?: string; error?: string }
 }>()
 
 const form = useForm({
@@ -24,16 +25,29 @@ const form = useForm({
 })
 
 function guardar() {
-  form.post(route('admin.empleados-temporales.store'), {
+  // store().url → POST /admin/empleados-temporales
+  form.post(store().url, {
     onSuccess: () => form.reset(),
   })
 }
 
-function eliminar(id: number) {
-  if (!confirm('¿Estás seguro de eliminar este empleado?')) return
-  router.delete(route('admin.empleados-temporales.destroy', id))
+function eliminar(emp: Empleado) {
+  toast.warning(`¿Eliminar a ${emp.nombre} ${emp.apellido_paterno}?`, {
+    description: `Tag: ${emp.numero_tag} — Esta acción no se puede deshacer.`,
+    duration: Infinity,
+    action: {
+      label: 'Sí, eliminar',
+      // destroy(emp).url → DELETE /admin/empleados-temporales/{id}
+      onClick: () => router.delete(destroy(emp).url),
+    },
+    cancel: {
+      label: 'Cancelar',
+      onClick: () => {},
+    },
+  })
 }
 </script>
+
 
 <template>
   <Head title="Empleados Temporales" />
@@ -46,11 +60,6 @@ function eliminar(id: number) {
         <p class="text-sm text-gray-500 mt-1">Administra el catálogo de empleados con acceso por tag.</p>
       </div>
 
-      <!-- Alerta Flash -->
-      <div v-if="flash?.success"
-           class="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-green-800 text-sm">
-        ✓ {{ flash.success }}
-      </div>
 
       <!-- Formulario de registro -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -157,7 +166,7 @@ function eliminar(id: number) {
                 <td class="px-4 py-3 text-gray-500">{{ emp.apellido_materno ?? '—' }}</td>
                 <td class="px-4 py-3 text-center">
                   <button
-                    @click="eliminar(emp.id)"
+                    @click="eliminar(emp)"
                     class="text-red-500 hover:text-red-700 text-xs font-medium transition"
                   >
                     Eliminar
