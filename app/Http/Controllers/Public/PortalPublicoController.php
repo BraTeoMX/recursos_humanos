@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -88,7 +89,11 @@ class PortalPublicoController extends Controller
     {
         $request->validate(['tag' => 'required|string|max:50']);
 
-        $empleado = EmpleadoTemporal::where('numero_tag', $request->tag)->first();
+        $tag = Str::upper(trim((string) $request->string('tag')));
+
+        $empleado = EmpleadoTemporal::query()
+            ->whereRaw('UPPER(numero_tag) = ?', [$tag])
+            ->first();
 
         if (! $empleado) {
             return response()->json(['encontrado' => false, 'mensaje' => 'Tag no encontrado.'], 404);
@@ -112,11 +117,20 @@ class PortalPublicoController extends Controller
     {
         $request->validate(['nombre' => 'required|string|min:2|max:100']);
 
-        $termino = '%' . $request->nombre . '%';
+        $tokens = collect(preg_split('/\s+/', trim((string) $request->string('nombre'))))
+            ->filter(fn($token) => $token !== '')
+            ->map(fn($token) => mb_strtolower($token))
+            ->values();
 
-        $empleados = EmpleadoTemporal::where('nombre', 'LIKE', $termino)
-            ->orWhere('apellido_paterno', 'LIKE', $termino)
-            ->orWhere('apellido_materno', 'LIKE', $termino)
+        $empleados = EmpleadoTemporal::query()
+            ->when($tokens->isNotEmpty(), function ($query) use ($tokens) {
+                foreach ($tokens as $token) {
+                    $query->whereRaw(
+                        "LOWER(CONCAT_WS(' ', nombre, apellido_paterno, COALESCE(apellido_materno, ''))) LIKE ?",
+                        ['%' . $token . '%']
+                    );
+                }
+            })
             ->limit(10)
             ->get(['id', 'numero_tag', 'nombre', 'apellido_paterno', 'apellido_materno']);
 
